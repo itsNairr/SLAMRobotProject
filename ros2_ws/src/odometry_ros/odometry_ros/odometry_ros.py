@@ -23,28 +23,27 @@ class OdometryNode(Node):
 
         # Initialize odometry with the starting position (0, 0, 0)
         self.odom = RobotOdometry()
-        self.last_time = self.get_clock().now()
+        self.get_logger().info("Odometry node initialized.")
         self.dt = 0.250 
         
         # Timer to periodically update odom
         self.create_timer(self.dt, self.update_odometry)
 
     def read_serial_data(self):
-        try:
-            line = self.ser.readline().decode('utf-8').strip()
-            v, omega = map(float, line.split(','))
-            return v, omega
-        except:
-            self.get_logger().warn("Failed to read serial data")
-            return 0.0, 0.0
+        line = self.ser.readline().decode('utf-8').strip()
+        parts = line.split(',')
+        if len(parts) == 3:
+            try:
+                v, omega, dt = map(float, parts)
+                return v, omega, dt
+            except ValueError:
+                pass
+        self.get_logger().warn(f"Serial parse error: {line!r}")
+        return 0.0, 0.0, self.dt
 
     def update_odometry(self):
         # Read velocity data from serial
-        now = self.get_clock().now()
-        dt = (now - self.last_time).nanoseconds / 1e9
-        self.last_time = now
-
-        v, omega = self.read_serial_data()
+        v, omega, dt = self.read_serial_data()
         
         # Update odometry
         self.odom.update(v, omega, dt)

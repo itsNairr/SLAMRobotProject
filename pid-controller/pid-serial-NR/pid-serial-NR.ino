@@ -269,18 +269,23 @@ void loop() {
 
     prevDelta = delta; // Record the current delta value
 
-    // Record the current time [ms]
-    t_last = t_now;
-
     // Reset the encoder ticks counter
     resetEncoders();
+
+    unsigned long dt_ms = t_now - t_last;
+    float dt_s = dt_ms / 1000.0;
 
     // Set motor speed based on PI output (adjusting for motor direction)
     forwardSpeed[0] = -(int32_t)output; // Reverse direction for motor 1
     forwardSpeed[2] = (int32_t)output;  // Normal direction for motor 2
     setMotorSpeed(forwardSpeed[0], forwardSpeed[2]); // Set the motor speed
-    Serial.print(currentspeed);
+    Serial.print(currentspeed,6);
     Serial.print(",");
-    Serial.println(currentAngularVel);
+    Serial.print(currentAngularVel,6);
+    Serial.print(",");
+    Serial.println(dt_s,6);
+  
+    // Record the current time [ms]
+    t_last = t_now;
   }
 }
