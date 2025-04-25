@@ -23,9 +23,8 @@ class OdometryNode(Node):
 
         # Initialize odometry with the starting position (0, 0, 0)
         self.odom = RobotOdometry()
-        
-        # Define time interval
-        self.dt = 0.250  # time interval in seconds
+        self.last_time = self.get_clock().now()
+        self.dt = 0.250 
         
         # Timer to periodically update odom
         self.create_timer(self.dt, self.update_odometry)
@@ -41,17 +40,21 @@ class OdometryNode(Node):
 
     def update_odometry(self):
         # Read velocity data from serial
+        now = self.get_clock().now()
+        dt = (now - self.last_time).nanoseconds / 1e9
+        self.last_time = now
+
         v, omega = self.read_serial_data()
         
         # Update odometry
-        self.odom.update(v, omega, self.dt)
+        self.odom.update(v, omega, dt)
         
         # Get the current pose
         x, y, theta = self.odom.get_pose()
 
         # Quaternion from Euler angles
         quaternion = Quaternion()
-        q = self.euler_to_quaternion(0, 0, theta)
+        q = quaternion_from_euler(0, 0, theta)
         quaternion.x = q[0]
         quaternion.y = q[1]
         quaternion.z = q[2]
