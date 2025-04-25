@@ -1,0 +1,7 @@
+{
+    "configuration": "mode=on",
+    "board": "arduino:megaavr:uno2018",
+    "programmer": "medbg",
+    "sketch": "pid-controller\\pid-serial\\pid-serial.ino",
+    "port": "COM3"
+}

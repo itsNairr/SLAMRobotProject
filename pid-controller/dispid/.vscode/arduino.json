@@ -1,0 +1,7 @@
+{
+    "configuration": "mode=on",
+    "board": "arduino:megaavr:uno2018",
+    "programmer": "medbg",
+    "port": "COM3",
+    "sketch": "dispid.ino"
+}
